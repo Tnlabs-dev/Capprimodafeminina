@@ -6,6 +6,7 @@ const path = require("node:path");
 const {
     calcularDimensoesRoleta
 } = require(path.join(__dirname, "..", "roleta-layout.js"));
+const lojaConfig = require(path.join(__dirname, "..", "config-loja.js"));
 
 test("calcula uma roleta de desktop com raio positivo", () => {
     const dimensoes = calcularDimensoesRoleta(320, 1);
@@ -44,7 +45,7 @@ test("exibe o contêiner antes de medir e montar a roleta", () => {
     const funcao = html.slice(inicio, fim);
 
     const exibir = funcao.indexOf('document.getElementById("roleta-container").style.display = "block"');
-    const aguardar = funcao.indexOf("await CappriRoletaLayout.aguardarLayout()");
+    const aguardar = funcao.indexOf("await RoletaLayout.aguardarLayout()");
     const montar = funcao.indexOf("montarRoleta(premios)");
 
     assert.ok(exibir >= 0, "o contêiner precisa ser exibido");
@@ -146,4 +147,19 @@ test("administração mostra aniversários e permite revogar a autorização", (
     assert.match(html, /data-revoke-birthday/);
     assert.match(html, /revogar-aniversario/);
     assert.match(html, /politica_privacidade_versao/);
+});
+
+test("centraliza os dados operacionais e a identidade da Cappri", () => {
+    const arquivos = ["index.html", "caixa.html", "admin.html", "privacidade.html"];
+    const conteudo = arquivos
+        .map(arquivo => fs.readFileSync(path.join(__dirname, "..", arquivo), "utf8"))
+        .join("\n");
+
+    assert.equal(lojaConfig.nome, "Cappri");
+    assert.equal(lojaConfig.apiUrl, "https://cappri.onrender.com");
+    assert.equal(lojaConfig.voucherPrefix, "CPR");
+    assert.equal(lojaConfig.chavesSessao.administracao, "cappri_admin_session");
+    assert.match(conteudo, /config-loja\.js/);
+    assert.match(conteudo, /LojaConfig\.apiUrl/);
+    assert.match(conteudo, /LojaConfig\.chavesSessao/);
 });
