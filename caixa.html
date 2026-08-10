@@ -10,6 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
 
+    <script src="config-loja.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1/build/qrcode.min.js"></script>
 
     <style>
@@ -40,6 +41,14 @@
             box-shadow: 0 15px 35px rgba(0,0,0,0.08);
             padding: 36px 30px;
             text-align: center;
+        }
+        .marca-painel {
+            margin-bottom: 22px;
+            color: var(--cor-bordeaux);
+            font-family: 'Playfair Display', serif;
+            font-size: 19px;
+            font-weight: 700;
+            letter-spacing: .14em;
         }
         h1 {
             font-family: 'Playfair Display', serif;
@@ -162,6 +171,7 @@
 <body>
 
 <div class="painel">
+    <div class="marca-painel" data-loja-nome>CAPPRI</div>
 
     <div id="tela-senha">
         <h1>Gerar Convite</h1>
@@ -193,14 +203,15 @@
 
 <script>
     // Ajuste esses dois links se o domínio do backend ou da roleta mudar.
-    const URL_API = "https://cappri.onrender.com";
-    const URL_ROLETA = "https://tnlabs-dev.github.io/Capprimodafeminina/";
+    const URL_API = LojaConfig.apiUrl;
+    const URL_ROLETA = LojaConfig.roletaUrl;
     let linkClienteAtual = "";
 
     // Lembra a senha dentro da mesma aba/sessão do navegador, pra
     // vendedora não precisar redigitar a cada cliente — some sozinha
     // se fechar a aba.
-    const senhaMemorizada = sessionStorage.getItem("cappri_senha_equipe");
+    const CHAVE_SENHA_EQUIPE = LojaConfig.chavesSessao.equipe;
+    const senhaMemorizada = sessionStorage.getItem(CHAVE_SENHA_EQUIPE);
     if (senhaMemorizada) {
         document.getElementById("senha").value = senhaMemorizada;
     }
@@ -249,7 +260,7 @@
             // A partir daqui o convite JÁ EXISTE no banco de dados —
             // mesmo que o desenho do QR falhe por algum motivo (ex: a
             // biblioteca não carregou), o código não pode se perder.
-            sessionStorage.setItem("cappri_senha_equipe", senha);
+            sessionStorage.setItem(CHAVE_SENHA_EQUIPE, senha);
             exibirConvite(dados.token, dados.campanha);
 
         } catch (e) {
